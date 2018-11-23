@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="styles.css"></link>
+  </head>
+  <body>
+    <div class="container">
+      <div class="search">
+        <label for "search">Enter a location:</label>
+        <input type="text" name="search"></input>
+        <button id="submit">Go</button>
+      </div>
+      <div id="map"></div>
+    </div>
+    <script src="https://maps.googleapis.com/maps/api/js?libraries=geometry&key=AIzaSyBYxtGxA3B4KgCSBExLmK_lD_lq5u-xkMA&callback=initMap"
+    async defer></script>
+    <script src="script.js"></script>
+  </body>
+</html>
