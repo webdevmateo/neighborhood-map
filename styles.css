@@ -25,6 +25,15 @@ html, body {
   height: 200px;
 }
 
+.details {
+  margin-top: .5em;
+}
+
+.likes {
+  font-style: italic;
+  margin-top: .5em;
+}
+
 .text {
   font-size: 12px;
 }
