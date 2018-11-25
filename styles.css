@@ -11,13 +11,28 @@ html, body {
   height: 100%;
 }
 
-.search {
-  width: 20%;
+.searchList {
+  padding-top: 1em;
+  padding-left: .5em;
+
+}
+
+.results {
+  margin-top: 1em;
+  padding-left:.5em;
+  list-style-type: none;
+}
+
+.locationLink {
+  padding-bottom: 1em;
+  background: red;
+  border: 1px solid black;
+  cursor: pointer;
 }
 
 #map {
   height: 100%;
-  width: 80%;
+  width: 100%;
 }
 
 #pano {

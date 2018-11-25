@@ -8,12 +8,12 @@
   </head>
   <body>
     <div class="container">
-      <div class="search">
+      <section class="searchList">
         <label for "search">Enter a location:</label>
-        <input type="text" name="search"></input>
-        <button id="submit">Go</button>
-      </div>
-      <div id="map"></div>
+        <input type="text" name="search" placeholder="Filter locations"></input>
+        <ul class="results"></ul>
+      </section>
+      <section id="map"></section>
     </div>
     <script src="https://maps.googleapis.com/maps/api/js?libraries=geometry&key=AIzaSyBYxtGxA3B4KgCSBExLmK_lD_lq5u-xkMA&callback=initMap"
     async defer></script>

@@ -8,6 +8,7 @@ function initMap() {
   fetchedLocations
   .then(function(locationData) {
     setMarkers(locationData, map);
+    populateLocationList(locationData, map);
   })
   .catch(function(error) {
     console.log(error);
@@ -59,7 +60,8 @@ function populateLocationsArray(locationsData) {
   let locations = [];
   for (let i = 0; i < responseLength; i++) {
     let location = locationsData.response.groups[0].items[i].venue;
-    locations.push(location);  }
+    locations.push(location);
+  }
   return locations;
 }
 
@@ -84,7 +86,12 @@ function setMarkers (locationData, map) {
         populateInfoWindow(this, largeInfoWindow, locationData[i]);
       });
     }
-  let largeInfoWindow = new google.maps.InfoWindow();
+    let largeInfoWindow = createInfoWindow();
+    return markers;
+}
+
+function createInfoWindow() {
+  return new google.maps.InfoWindow();
 }
 
 function populateInfoWindow(marker, infowindow, locationData) {
@@ -131,6 +138,27 @@ function populateInfoWindow(marker, infowindow, locationData) {
     }
     streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
     infowindow.open(map, marker);
+  }
+}
+
+function populateLocationList(locations, map) {
+  const ul = document.querySelector('.results');
+  let markers = setMarkers(locations, map);
+  let infowindow = createInfoWindow();
+  for (i = 0; i < locations.length; i++) {
+    let li = document.createElement('li');
+    li.classList.value = 'locationLink';
+    li.innerHTML = locations[i].name;
+    ul.appendChild(li);
+    ul.onclick = function(event) {
+      let marker = markers.filter(function(marker){
+        return marker.title == event.target.innerText;
+      });
+      let location = locations.filter(function(location) {
+        return location.name == event.target.innerText;
+      })
+      populateInfoWindow(marker[0], infowindow, location[0]);
+    }
   }
 }
 
