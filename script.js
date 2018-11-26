@@ -8,7 +8,7 @@ function initMap() {
   fetchedLocations
   .then(function(locationData) {
     setMarkers(locationData, map);
-    populateLocationList(locationData, map);
+    populateLocationsList(locationData, map);
   })
   .catch(function(error) {
     console.log(error);
@@ -141,30 +141,35 @@ function populateInfoWindow(marker, infowindow, locationData) {
   }
 }
 
-function populateLocationList(locations, map) {
+function populateLocationsList(locations, map) {
+  let showingLocations = [];
   const ul = document.querySelector('.results');
   let markers = setMarkers(locations, map);
   let infowindow = createInfoWindow();
-  for (i = 0; i < locations.length; i++) {
-    let li = document.createElement('li');
-    li.classList.value = 'locationLink';
-    li.innerHTML = locations[i].name;
-    ul.appendChild(li);
-    ul.onclick = function(event) {
-      let marker = markers.filter(function(marker){
-        return marker.title == event.target.innerText;
-      });
-      let location = locations.filter(function(location) {
-        return location.name == event.target.innerText;
-      })
-      populateInfoWindow(marker[0], infowindow, location[0]);
-    }
+  let input = document.getElementById('search');
+  input.onkeyup = function() {
+    const match = new RegExp((this.value), 'i');
+    showingLocations = locations.filter((location) =>
+       match.test(location.name));
+    let locationList = showingLocations.map((location) => '<li class="locationLink">' + location.name + '</li>');
+    ul.innerHTML = locationList.join('');
+  }
+  showingLocations = locations.map(function(location) {
+    return (
+      '<li class="locationLink">' + location.name + '</li>'
+      )
+  });
+  ul.innerHTML = showingLocations.join('');
+  ul.onclick = function(event) {
+    let marker = markers.filter(function(marker){
+      return marker.title == event.target.innerText;
+    });
+    let location = locations.filter(function(location) {
+      return location.name == event.target.innerText;
+    })
+    populateInfoWindow(marker[0], infowindow, location[0]);
   }
 }
-
-
-
-
 
 
 
