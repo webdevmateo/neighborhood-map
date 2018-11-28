@@ -13,13 +13,6 @@ function initMap() {
   .catch(function(error) {
     console.log(error);
   });
-
-  // let likes = getLikes(locationID);
-  // likes.then(function(response) {
-  //   console.log(response);
-  //   return response;
-  // });
-
 }
 
 function fetchLocations() {
@@ -65,9 +58,9 @@ function populateLocationsArray(locationsData) {
   return locations;
 }
 
-function setMarkers (locationData, map) {
-    let responseLength = locationData.length;
+function setMarkers (locationData, map, filteredMarkers) {
     let markers = [];
+    let responseLength = locationData.length;
     for (let i = 0; i < responseLength; i++) {
       let lat = locationData[i].location.lat;
       let lng = locationData[i].location.lng;
@@ -77,6 +70,7 @@ function setMarkers (locationData, map) {
         map: map,
         position: position,
         title: title,
+        filtered: false,
         animation: google.maps.Animation.DROP,
         id: i
       });
@@ -86,6 +80,7 @@ function setMarkers (locationData, map) {
         populateInfoWindow(this, largeInfoWindow, locationData[i]);
       });
     }
+
     let largeInfoWindow = createInfoWindow();
     return markers;
 }
@@ -103,11 +98,7 @@ function populateInfoWindow(marker, infowindow, locationData) {
     });
     let streetViewService = new google.maps.StreetViewService();
     let radius = 50;
-    let locationID = locationData.id;
-    let likes = getLikes(locationID);
-    likes.then(function(response) {
-      document.querySelector('.likes').innerHTML = response + ' by FourSquare users';
-    })
+
 
     function getStreetView(data, status) {
       let infowindowContent = `
@@ -119,6 +110,11 @@ function populateInfoWindow(marker, infowindow, locationData) {
             <div class="likes"></div>
           </div>
           `;
+      let locationID = locationData.id;
+      let likes = getLikes(locationID);
+      likes.then(function(response) {
+        document.querySelector('.likes').innerHTML = response + ' by FourSquare users';
+      });
       let noStreetViewMessage = '<div class ="details">No street view found.</div>';
       if (status == google.maps.StreetViewStatus.OK) {
         let nearStreetViewLocation = data.location.latLng;
@@ -144,16 +140,18 @@ function populateInfoWindow(marker, infowindow, locationData) {
 function populateLocationsList(locations, map) {
   let showingLocations = [];
   const ul = document.querySelector('.results');
-  let markers = setMarkers(locations, map);
   let infowindow = createInfoWindow();
   let input = document.getElementById('search');
-  input.onkeyup = function() {
+  input.onkeyup = function () {
     const match = new RegExp((this.value), 'i');
     showingLocations = locations.filter((location) =>
        match.test(location.name));
-    let locationList = showingLocations.map((location) => '<li class="locationLink">' + location.name + '</li>');
-    ul.innerHTML = locationList.join('');
+    let filteredLocations = showingLocations.map((location) => '<li class="locationLink">' + location.name + '</li>');
+    ul.innerHTML = filteredLocations.join('');
+    filterMarkers(locations, showingLocations, map);
   }
+
+
   showingLocations = locations.map(function(location) {
     return (
       '<li class="locationLink">' + location.name + '</li>'
@@ -161,6 +159,7 @@ function populateLocationsList(locations, map) {
   });
   ul.innerHTML = showingLocations.join('');
   ul.onclick = function(event) {
+    let markers = setMarkers(locations, map);
     let marker = markers.filter(function(marker){
       return marker.title == event.target.innerText;
     });
@@ -171,7 +170,14 @@ function populateLocationsList(locations, map) {
   }
 }
 
+function filterMarkers(originalLocations, filteredLocations, map) {
+  let filteredMarkers = setMarkers(filteredLocations, map);
+  filteredMarkers.forEach(function(marker) {
+      marker.filtered = true;
+    });
 
+  setMarkers(originalLocations, map, filteredMarkers);
+}
 
 
 
