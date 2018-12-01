@@ -7,8 +7,7 @@ function initMap() {
   let fetchedLocations = fetchLocations();
   fetchedLocations
   .then(function(locationData) {
-    setMarkers(locationData, map);
-    populateLocationsList(locationData, map);
+    runApp(locationData, map);
   })
   .catch(function(error) {
     console.log(error);
@@ -58,31 +57,9 @@ function populateLocationsArray(locationsData) {
   return locations;
 }
 
-function setMarkers (locationData, map, filteredMarkers) {
-    let markers = [];
-    let responseLength = locationData.length;
-    for (let i = 0; i < responseLength; i++) {
-      let lat = locationData[i].location.lat;
-      let lng = locationData[i].location.lng;
-      let position = {lat: lat, lng: lng};
-      let title = locationData[i].name;
-      let marker = new google.maps.Marker({
-        map: map,
-        position: position,
-        title: title,
-        filtered: false,
-        animation: google.maps.Animation.DROP,
-        id: i
-      });
-
-      markers.push(marker);
-      marker.addListener('click', function() {
-        populateInfoWindow(this, largeInfoWindow, locationData[i]);
-      });
-    }
-
-    let largeInfoWindow = createInfoWindow();
-    return markers;
+function setMarkers (locationData, map) {
+  populateLocationsList(locationData, map);
+  populateMarkersArray(locationData, map);
 }
 
 function createInfoWindow() {
@@ -139,27 +116,28 @@ function populateInfoWindow(marker, infowindow, locationData) {
 
 function populateLocationsList(locations, map) {
   let showingLocations = [];
+  let markers = populateMarkersArray(locations, map);
   const ul = document.querySelector('.results');
   let infowindow = createInfoWindow();
   let input = document.getElementById('search');
-  input.onkeyup = function () {
+
+  input.onkeyup = function getShowingLocations() {
     const match = new RegExp((this.value), 'i');
     showingLocations = locations.filter((location) =>
        match.test(location.name));
     let filteredLocations = showingLocations.map((location) => '<li class="locationLink">' + location.name + '</li>');
     ul.innerHTML = filteredLocations.join('');
-    filterMarkers(locations, showingLocations, map);
+    markers = populateMarkersArray(showingLocations, map);
+    console.log(markers);
   }
 
-
-  showingLocations = locations.map(function(location) {
+  let html = locations.map(function(location) {
     return (
       '<li class="locationLink">' + location.name + '</li>'
       )
   });
-  ul.innerHTML = showingLocations.join('');
+  ul.innerHTML = html.join('');
   ul.onclick = function(event) {
-    let markers = setMarkers(locations, map);
     let marker = markers.filter(function(marker){
       return marker.title == event.target.innerText;
     });
@@ -170,19 +148,63 @@ function populateLocationsList(locations, map) {
   }
 }
 
-function filterMarkers(originalLocations, filteredLocations, map) {
-  let filteredMarkers = setMarkers(filteredLocations, map);
-  filteredMarkers.forEach(function(marker) {
-      marker.filtered = true;
-    });
-
-  setMarkers(originalLocations, map, filteredMarkers);
+function hideMarkers(markers, filteredMarkers) {
+  console.log(markers);
+  console.log(filteredMarkers);
 }
 
+function populateMarkersArray (locationData, map) {
+    let responseLength = locationData.length;
+    let markers = [];
+
+      for (let i = 0; i < responseLength; i++) {
+      let lat = locationData[i].location.lat;
+      let lng = locationData[i].location.lng;
+      let position = {lat: lat, lng: lng};
+      let title = locationData[i].name;
+
+      let marker = new google.maps.Marker({
+        map: map,
+        position: position,
+        title: title,
+        animation: google.maps.Animation.DROP,
+        id: i
+      });
 
 
 
 
+      markers.push(marker);
+
+        markers.forEach(function(marker) {
+
+          if (responseLength < 15) {
+
+          marker.setMap(null);
+
+          }
+      })
+      marker.addListener('click', function() {
+        populateInfoWindow(this, largeInfoWindow, locationData[i]);
+      });
+    }
+
+
+
+
+    let largeInfoWindow = createInfoWindow();
+
+    return markers;
+  }
+
+
+function getShowingLocations(showingLocations) {
+  console.log(showingLocations);
+}
+
+function runApp (locationData, map) {
+  setMarkers(locationData, map);
+}
 
 
 
