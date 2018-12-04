@@ -175,15 +175,6 @@ function populateMarkersArray (locationData, map) {
 
 
       markers.push(marker);
-
-        markers.forEach(function(marker) {
-
-          if (responseLength < 15) {
-
-          marker.setMap(null);
-
-          }
-      })
       marker.addListener('click', function() {
         populateInfoWindow(this, largeInfoWindow, locationData[i]);
       });
