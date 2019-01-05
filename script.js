@@ -14,6 +14,20 @@ function initMap() {
   });
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("DOM fully loaded and parsed.");
+  fetch('https://api.foursquare.com/v2/venues/explore?client_id=JEASTQIYAOQHC5EJ45NM4QUSD2AS11EADPF51VDM42O4Q13A&client_secret=GEMFOAQ5IBMRS1ROLEFMRMNEZSV0R3QYPZEMLALQJNUFANCH&v=20180323&limit=15&ll=40.7243,-74.0018&near=Agoura Hills, CA')
+  .then((response) => {
+    return response.json();
+  })
+  .then((data) => {
+    console.log(data);
+  })
+  .catch((error) => {
+    console.log(error);
+  })
+})
+
 function fetchLocations() {
    return fetch(
     'https://api.foursquare.com/v2/venues/explore?client_id=JEASTQIYAOQHC5EJ45NM4QUSD2AS11EADPF51VDM42O4Q13A&client_secret=GEMFOAQ5IBMRS1ROLEFMRMNEZSV0R3QYPZEMLALQJNUFANCH&v=20180323&limit=15&ll=40.7243,-74.0018&near=Agoura Hills, CA'
@@ -175,8 +189,8 @@ function populateMarkersArray (locationData, map) {
 
 
       markers.push(marker);
-      marker.addListener('click', function() {
-        populateInfoWindow(this, largeInfoWindow, locationData[i]);
+      marker.addListener('click', () => {
+        populateInfoWindow(marker, largeInfoWindow, locationData[i]);
       });
     }
 
